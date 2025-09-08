@@ -29,8 +29,55 @@
 :80 {
     import cors
     
-    handle /deployment.json {
+    handle /deployment* {
         reverse_proxy sc-deployment-server:80
+    }
+    
+    # Explorer (Blockscout) under /explorer path
+    handle /explorer* {
+        uri strip_prefix /explorer
+        reverse_proxy proxy:80
+    }
+    
+    # Blockscout static resources (needed for subpath routing)
+    handle /assets/* {
+        reverse_proxy proxy:80
+    }
+    
+    handle /_next/* {
+        reverse_proxy proxy:80
+    }
+    
+    handle /icons/* {
+        reverse_proxy proxy:80
+    }
+    
+    handle /static/* {
+        reverse_proxy proxy:80
+    }
+    
+    # Blockscout API endpoints
+    handle /api/v1/* {
+        reverse_proxy backend:4000
+    }
+    
+    handle /api/v2/* {
+        reverse_proxy backend:4000
+    }
+    
+    # WebSocket support for Blockscout
+    handle /socket/* {
+        reverse_proxy backend:4000 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    
+    handle /graph-playground* {
+        uri strip_prefix /graph-playground
+        reverse_proxy graph-node:8000
     }
     
     handle /rpc* {
