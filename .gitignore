@@ -1,0 +1,16 @@
+
+# Log files
+*.log
+ngrok*.log
+
+# macOS files
+.DS_Store
+
+# Temporary files
+blockscout-nginx.conf
+proxy/
+
+
+# Large directories
+1b/blockscout/
+
