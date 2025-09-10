@@ -32,7 +32,7 @@
     handle /deployment* {
         reverse_proxy sc-deployment-server:80
     }
-    
+
     # Explorer (Blockscout) under /explorer path
     handle /explorer* {
         uri strip_prefix /explorer
@@ -65,6 +65,15 @@
         reverse_proxy backend:4000
     }
     
+    # Stats API for daily transactions
+    handle /api/v2/stats* {
+        reverse_proxy backend:4000
+    }
+    
+    handle /api/v2/main-page/* {
+        reverse_proxy backend:4000
+    }
+    
     # WebSocket support for Blockscout
     handle /socket/* {
         reverse_proxy backend:4000 {
@@ -72,17 +81,23 @@
             header_up X-Real-IP {remote}
             header_up X-Forwarded-For {remote}
             header_up X-Forwarded-Proto {scheme}
+            header_up Connection {>Connection}
+            header_up Upgrade {>Upgrade}
+            header_up Sec-WebSocket-Key {>Sec-WebSocket-Key}
+            header_up Sec-WebSocket-Version {>Sec-WebSocket-Version}
+            header_up Sec-WebSocket-Protocol {>Sec-WebSocket-Protocol}
         }
-    }
-    
-    handle /graph-playground* {
-        uri strip_prefix /graph-playground
-        reverse_proxy graph-node:8000
     }
     
     handle /rpc* {
         uri strip_prefix /rpc
         reverse_proxy geth:8545
+    }
+
+    # Graph node GraphQL playground
+    handle /graph-playground* {
+        uri strip_prefix /graph-playground
+        reverse_proxy graph-node:8000
     }
     
     handle {
