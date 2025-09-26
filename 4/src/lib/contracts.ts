@@ -5,20 +5,32 @@ import {
   MockERC20__factory,
 } from "@/typechain";
 
-const withEnv = (key: string): string => {
-  const value = process.env[key];
+const env = {
+  factory:
+    process.env.NEXT_PUBLIC_MINI_AMM_FACTORY_ADDRESS ??
+    process.env.MINI_AMM_FACTORY_ADDRESS ??
+    "",
+  token0:
+    process.env.NEXT_PUBLIC_MOCK_TOKEN0_ADDRESS ??
+    process.env.MOCK_TOKEN0_ADDRESS ??
+    "",
+  token1:
+    process.env.NEXT_PUBLIC_MOCK_TOKEN1_ADDRESS ??
+    process.env.MOCK_TOKEN1_ADDRESS ??
+    "",
+  pair:
+    process.env.NEXT_PUBLIC_MINI_AMM_PAIR_ADDRESS ??
+    process.env.MINI_AMM_PAIR_ADDRESS ??
+    "",
+} as const;
+
+for (const [key, value] of Object.entries(env)) {
   if (!value) {
     throw new Error(`Missing required env var: ${key}`);
   }
-  return value;
-};
+}
 
-export const CONTRACT_ADDRESSES = {
-  factory: withEnv("NEXT_PUBLIC_MINI_AMM_FACTORY_ADDRESS"),
-  token0: withEnv("NEXT_PUBLIC_MOCK_TOKEN0_ADDRESS"),
-  token1: withEnv("NEXT_PUBLIC_MOCK_TOKEN1_ADDRESS"),
-  pair: withEnv("NEXT_PUBLIC_MINI_AMM_PAIR_ADDRESS"),
-} as const;
+export const CONTRACT_ADDRESSES = env;
 
 type SignerOrProvider = ethers.Signer | ethers.AbstractProvider;
 

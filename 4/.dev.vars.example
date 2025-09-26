@@ -1,6 +1,8 @@
 # Load .env.development* files when running `wrangler dev`
 NEXTJS_ENV=development
 FLARE_COSTON2_RPC_URL=https://coston2-api.flare.network/ext/C/rpc
+NEXT_PUBLIC_FLARE_RPC_URL=https://coston2-api.flare.network/ext/C/rpc
+NEXT_PUBLIC_WC_PROJECT_ID=
 
 # EVM wallet configuration (fill before running scripts)
 DEPLOYER_PRIVATE_KEY=

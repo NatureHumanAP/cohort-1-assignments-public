@@ -1,29 +1,56 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import { CONTRACT_ADDRESSES } from "@/lib/contracts";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { TokenBalances } from "@/components/token-balances";
+import { AmmActions } from "@/components/amm-actions";
 
 export default function Home() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+        <ConnectButton showBalance={false} />
         <Image
           className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
+          src="/hell-month.svg"
+          alt="Hell Month logo"
+          width={240}
+          height={60}
           priority
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+        <section className="flex flex-col gap-4 w-full max-w-2xl">
+          <h1 className="text-xl font-semibold">Deployed Contracts (Flare Coston2)</h1>
+          <ul className="bg-black/[.05] dark:bg-white/[.06] rounded p-4 font-mono text-xs sm:text-sm space-y-2">
+            <li>
+              <span className="font-semibold">Factory:</span> {CONTRACT_ADDRESSES.factory}
+            </li>
+            <li>
+              <span className="font-semibold">Token0:</span> {CONTRACT_ADDRESSES.token0}
+            </li>
+            <li>
+              <span className="font-semibold">Token1:</span> {CONTRACT_ADDRESSES.token1}
+            </li>
+            <li>
+              <span className="font-semibold">MiniAMM Pair:</span> {CONTRACT_ADDRESSES.pair}
+            </li>
+          </ul>
+          <p className="text-sm text-center sm:text-left">
+            Start wiring RainbowKit, swap logic, and liquidity flows with the typed helpers in
+            <code className="ml-1 px-1 py-0.5 bg-black/[.05] dark:bg-white/[.06] rounded">src/lib/contracts.ts</code>.
+          </p>
+        </section>
+
+        <TokenBalances refreshKey={refreshKey} />
+
+        <AmmActions onActionComplete={handleRefresh} />
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
