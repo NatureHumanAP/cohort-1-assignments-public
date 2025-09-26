@@ -1,0 +1,19 @@
+{
+  "name": "2",
+  "version": "1.0.0",
+  "description": "Refer to the last slide of [Day 4](https://github.com/hell-month/course/blob/main/Day4.md#assignment-2) for instructions.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ethers": "^6.15.0"
+  }
+}
