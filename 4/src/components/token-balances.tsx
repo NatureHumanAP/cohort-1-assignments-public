@@ -147,7 +147,7 @@ export function TokenBalances({ refreshKey }: { refreshKey: number }) {
             </li>
           ))}
         </ul>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-2 sm:grid-cols-3">
           <StatCard
             label="Total LP Supply"
             value={formatAmount(lpData?.[0]?.result as bigint | undefined, lpDecimals)}
@@ -155,6 +155,13 @@ export function TokenBalances({ refreshKey }: { refreshKey: number }) {
           <StatCard
             label="Your LP Balance"
             value={formatAmount(lpData?.[1]?.result as bigint | undefined, lpDecimals)}
+          />
+          <StatCard
+            label="Your Pool Share"
+            value={formatLpShare(
+              lpData?.[0]?.result as bigint | undefined,
+              lpData?.[1]?.result as bigint | undefined,
+            )}
           />
         </div>
       </div>
@@ -198,3 +205,10 @@ function StatCard({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+const formatLpShare = (total?: bigint, user?: bigint) => {
+  if (!total || total === 0n || !user) return "-";
+  const numerator = Number(user) / Number(total);
+  if (!Number.isFinite(numerator)) return "-";
+  return `${(numerator * 100).toFixed(2)}%`;
+};
