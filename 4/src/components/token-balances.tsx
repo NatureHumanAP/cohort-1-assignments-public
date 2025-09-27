@@ -1,7 +1,7 @@
 "use client";
 
 import { CONTRACT_ADDRESSES } from "@/lib/contracts";
-import { MockERC20__factory } from "@/typechain";
+import { MiniAMM__factory, MockERC20__factory } from "@/typechain";
 import { useAccount, useBalance, useReadContracts } from "wagmi";
 import { formatUnits, zeroAddress } from "viem";
 import { useEffect } from "react";
@@ -17,6 +17,7 @@ const formatAmount = (value?: bigint, decimals = 18) => {
 };
 
 const zeroAddressTyped = zeroAddress as `0x${string}`;
+const lpDecimals = 18;
 
 export function TokenBalances({ refreshKey }: { refreshKey: number }) {
   const { address, isConnected } = useAccount();
@@ -59,11 +60,34 @@ export function TokenBalances({ refreshKey }: { refreshKey: number }) {
     },
   });
 
+  const {
+    data: lpData,
+    refetch: refetchLpData,
+  } = useReadContracts({
+    contracts: [
+      {
+        address: CONTRACT_ADDRESSES.pair,
+        abi: MiniAMM__factory.abi,
+        functionName: "totalSupply",
+      },
+      {
+        address: CONTRACT_ADDRESSES.pair,
+        abi: MiniAMM__factory.abi,
+        functionName: "balanceOf",
+        args: [address ?? zeroAddressTyped],
+      },
+    ],
+    query: {
+      enabled: isConnected,
+    },
+  });
+
   useEffect(() => {
     if (!isConnected) return;
     refetchUserBalances();
     refetchPoolBalances();
-  }, [refreshKey, isConnected, address, refetchUserBalances, refetchPoolBalances]);
+    refetchLpData();
+  }, [refreshKey, isConnected, address, refetchUserBalances, refetchPoolBalances, refetchLpData]);
 
   if (!isConnected) {
     return (
@@ -123,6 +147,16 @@ export function TokenBalances({ refreshKey }: { refreshKey: number }) {
             </li>
           ))}
         </ul>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <StatCard
+            label="Total LP Supply"
+            value={formatAmount(lpData?.[0]?.result as bigint | undefined, lpDecimals)}
+          />
+          <StatCard
+            label="Your LP Balance"
+            value={formatAmount(lpData?.[1]?.result as bigint | undefined, lpDecimals)}
+          />
+        </div>
       </div>
     </section>
   );
@@ -155,3 +189,12 @@ const mapResultsToTokens = (
   });
   return Object.fromEntries(entries) as Record<TokenConfig["id"], bigint>;
 };
+
+function StatCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded border border-black/[.08] dark:border-white/[.12] px-3 py-2">
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="font-mono text-sm">{value}</p>
+    </div>
+  );
+}
